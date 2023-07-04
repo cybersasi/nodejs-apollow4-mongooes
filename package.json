@@ -1,0 +1,50 @@
+{
+  "name": "node-typescript-starter",
+  "version": "1.0.0",
+  "description": "Node project starter with Typescript, ESLint and Prettier",
+  "main": "index.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "graphql-codegen && nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
+    "eslint:fix": "eslint --fix",
+    "db:shadow": "docker run -d --rm -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=task-shadow --name task-shadow-db -p 3309:3306 mysql:8.0.23",
+    "db:shadow:stop": "docker kill task-shadow-db && docker container prune -f",
+    "create-task": "yarn ts-node ./src/create-task.ts"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^4.0.1",
+    "@graphql-codegen/typescript": "^4.0.1",
+    "@graphql-codegen/typescript-resolvers": "^4.0.1",
+    "@types/cors": "^2.8.13",
+    "@types/node": "^18.15.2",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
+    "@typescript-eslint/parser": "^5.55.0",
+    "eslint": "^8.36.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-sort-destructure-keys": "^1.5.0",
+    "nodemon": "^2.0.21",
+    "prettier": "^2.8.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.7.5",
+    "@graphql-tools/graphql-file-loader": "^8.0.0",
+    "@graphql-tools/load": "^8.0.0",
+    "@graphql-tools/schema": "^10.0.0",
+    "@prisma/client": "4.15.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "graphql": "^16.7.1",
+    "graphql-type-decimal": "^1.0.0",
+    "graphql-type-json": "^0.3.2",
+    "graphql-ws": "^5.14.0",
+    "http": "^0.0.1-security",
+    "ws": "^8.13.0"
+  },
+  "engines": {
+    "node": "16.x"
+  }
+}
