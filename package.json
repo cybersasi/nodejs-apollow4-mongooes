@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "graphql-codegen && nodemon --watch \"*.ts\" --exec \"ts-node\" ./src/index.ts",
+    "gen-type": "graphql-codegen",
     "eslint:fix": "eslint --fix",
     "db:shadow": "docker run -d --rm -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=task-shadow --name task-shadow-db -p 3309:3306 mysql:8.0.23",
     "db:shadow:stop": "docker kill task-shadow-db && docker container prune -f",
@@ -38,6 +39,8 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "graphql": "^16.7.1",
+    "graphql-mongodb-subscriptions": "^1.0.0",
+    "graphql-subscriptions": "^2.0.0",
     "graphql-type-decimal": "^1.0.0",
     "graphql-type-json": "^0.3.2",
     "graphql-ws": "^5.14.0",

@@ -13,19 +13,40 @@ interface MyContext {
     token?: string;
 }
 
+export default (httpServer: any) => {
+    const typeDefs = loadSchemaSync("./src/schema/**/*.graphql", {
+        loaders: [new GraphQLFileLoader()],
+    });
 
-const typeDefs = loadSchemaSync("./src/schema/**/*.graphql", {
-    loaders: [new GraphQLFileLoader()],
-});
-
-const schema = makeExecutableSchema({ typeDefs, resolvers });
+    const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 
-// Same ApolloServer initialization as before, plus the drain plugin
-// for our httpServer.
-export const server = (httpServer: any) => new ApolloServer<MyContext>({
-    schema,
-    plugins: [
-        ApolloServerPluginDrainHttpServer({ httpServer })
-    ],
-});
+    // Same ApolloServer initialization as before, plus the drain plugin
+    // for our httpServer.
+    const server = new ApolloServer<MyContext>({
+        schema,
+        plugins: [
+            ApolloServerPluginDrainHttpServer({ httpServer }),
+            {
+                async serverWillStart() {
+                    return {
+                        async drainServer() {
+                            await serverCleanup.dispose();
+                        },
+                    };
+                },
+            },
+        ],
+    });
+
+    const wsServer = new WebSocketServer({
+        // This is the `httpServer` we created in a previous step.
+        server: httpServer,
+        // Pass a different path here if app.use
+        // serves expressMiddleware at a different path
+        path: '/graphql',
+    });
+
+    const serverCleanup = useServer({ schema }, wsServer);
+
+}

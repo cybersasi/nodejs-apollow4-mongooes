@@ -41,6 +41,7 @@ export type Query = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  numberIncremented?: Maybe<Scalars['Int']['output']>;
   users?: Maybe<Array<User>>;
 };
 
@@ -133,6 +134,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateUserInput: CreateUserInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
+  Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
@@ -146,6 +148,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   CreateUserInput: CreateUserInput;
   ID: Scalars['ID']['output'];
+  Int: Scalars['Int']['output'];
   Mutation: {};
   Query: {};
   String: Scalars['String']['output'];
@@ -164,6 +167,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
+  numberIncremented?: SubscriptionResolver<Maybe<ResolversTypes['Int']>, "numberIncremented", ParentType, ContextType>;
   users?: SubscriptionResolver<Maybe<Array<ResolversTypes['User']>>, "users", ParentType, ContextType>;
 };
 
