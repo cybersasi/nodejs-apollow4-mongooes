@@ -1,4 +1,5 @@
 import { ApolloServer } from '@apollo/server';
+import { httpContext, wsContext } from './lib/apolloContext';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { createServer } from 'http';
@@ -13,6 +14,11 @@ import { loadSchemaSync } from '@graphql-tools/load'
 import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
 
 (async () => {
+
+  interface MyContext {
+    token?: string;
+  }
+
   const typeDefs = loadSchemaSync("./src/schema/**/*.graphql", {
     loaders: [new GraphQLFileLoader()],
   });
@@ -30,11 +36,27 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
     server: httpServer,
     path: '/graphql',
   });
+
   // Save the returned server's info so we can shutdown this server later
-  const serverCleanup = useServer({ schema }, wsServer);
+  const serverCleanup = useServer({
+    schema,
+    context: async (ctx, msg, args) => wsContext(ctx, msg, args),
+    // As before, ctx is the graphql-ws Context where connectionParams live.
+    onConnect: async (ctx) => {
+      // Check authentication every time a client connects.
+      console.log("msg onConnect", ctx.connectionParams)
+      // if (tokenIsNotValid(ctx.connectionParams)) {
+      //     // You can return false to close the connection  or throw an explicit error
+      //     throw new Error('Auth token missing!');
+      // }
+    },
+    onDisconnect(ctx, code, reason) {
+      console.log('Disconnected!');
+    },
+  }, wsServer);
 
   // Set up ApolloServer.
-  const server = new ApolloServer({
+  const server = new ApolloServer<MyContext>({
     schema,
     plugins: [
       // Proper shutdown for the HTTP server.
@@ -54,7 +76,11 @@ import { GraphQLFileLoader } from '@graphql-tools/graphql-file-loader'
   });
 
   await server.start();
-  app.use('/graphql', cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(server));
+  app.use('/graphql', cors<cors.CorsRequest>(), bodyParser.json(), expressMiddleware(server, {
+    context: async ({ req }) => httpContext(req)
+  }
+
+  ));
 
   const PORT = 4000;
   // Now that our HTTP server is fully set up, we can listen to it.

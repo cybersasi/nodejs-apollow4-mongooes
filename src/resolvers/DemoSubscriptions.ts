@@ -14,21 +14,21 @@ const SOMETHING_CHANGED_TOPIC = 'NUMBER_INCREMENTED';
 
 const DemoSubscriptions: Resolvers = {
     Subscription: {
-        numberIncremented: {
-            subscribe: () => pubsub.asyncIterator<numberIncremented>('NUMBER_INCREMENTED'),
-        },
-        commentAdded: {
-            subscribe: withFilter(
-                () => pubsub.asyncIterator('COMMENT_ADDED'),
-                (payload, variables) => {
-                    // Only push an update if the comment is on
-                    // the correct repository for this operation
-                    return (
-                        payload.commentAdded.repository_name === variables.repoFullName
-                    );
-                },
-            ),
-        },
+        // numberIncremented: {
+        //     subscribe: () => pubsub.asyncIterator<numberIncremented>('NUMBER_INCREMENTED'),
+        // },
+        // commentAdded: {
+        //     subscribe: withFilter(
+        //         () => pubsub.asyncIterator('COMMENT_ADDED'),
+        //         (payload, variables) => {
+        //             // Only push an update if the comment is on
+        //             // the correct repository for this operation
+        //             return (
+        //                 payload.commentAdded.repository_name === variables.repoFullName
+        //             );
+        //         },
+        //     ),
+        // },
     },
 };
 
