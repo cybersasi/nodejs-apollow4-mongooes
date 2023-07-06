@@ -47,6 +47,34 @@ export default (httpServer: any) => {
         path: '/graphql',
     });
 
-    const serverCleanup = useServer({ schema }, wsServer);
+    const getDynamicContext = async (ctx: any, msg: any, args: any) => {
+        // ctx is the graphql-ws Context where connectionParams live
+        if (ctx.connectionParams.authentication) {
+            const currentUser = await findUser(ctx.connectionParams.authentication);
+            return { currentUser };
+        }
+        // Otherwise let our resolvers know we don't have a current user
+        return { currentUser: null };
+    };
+
+    const serverCleanup = useServer({
+        schema,
+        context: async (ctx, msg, args) => {
+            // You can define your own function for setting a dynamic context
+            // or provide a static value
+            return getDynamicContext(ctx, msg, args);
+        },
+        // As before, ctx is the graphql-ws Context where connectionParams live.
+        onConnect: async (ctx) => {
+            // Check authentication every time a client connects.
+            if (tokenIsNotValid(ctx.connectionParams)) {
+                // You can return false to close the connection  or throw an explicit error
+                throw new Error('Auth token missing!');
+            }
+        },
+        onDisconnect(ctx, code, reason) {
+            console.log('Disconnected!');
+        },
+    }, wsServer);
 
 }
