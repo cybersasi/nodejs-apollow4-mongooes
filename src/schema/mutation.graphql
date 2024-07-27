@@ -1,3 +1,0 @@
-type Mutation {
-    registerUser(input: CreateUserInput!): User!
-}

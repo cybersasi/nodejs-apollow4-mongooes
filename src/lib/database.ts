@@ -1,15 +1,17 @@
 import mongoose from "mongoose";
-import Config from "./config";
+import config from "./config";
+import { DemoSchema } from "../model/demo";
 
 let db: any;
+// let loggingDB: any;
 
 const init = async () => {
   // Connection Operational Database
-  db = mongoose.createConnection(`${Config.databaseUrl}/${Config.databaseName}`)
+  db = await mongoose.createConnection(`${config.databaseUrl}/${config.databaseName}`).asPromise();
+  db.model('demo', DemoSchema);
+
+  // Connection Logging Database
+  // loggingDB = await mongoose.createConnection(`${config.databaseUrl}/${config.loggingDatabaseName}`).asPromise();
 }
 
-
-const collection = (collectionName: string) => db?.collection(collectionName);
-
-
-export { init, collection }
+export { init, db }

@@ -1,0 +1,32 @@
+############################ Common Usage #########################################
+type Demo {
+  _id: ID,
+  testName: String,
+}
+
+type DemoList {
+  result: [Demo],
+  totalResult: Int,
+}
+
+############################ Common Usage #########################################
+
+## Query
+input  GetDemoListPaginateOptions_Sort {
+  testName: Int,
+}
+
+input GetDemoListPaginateOptions {
+  sort: GetDemoListPaginateOptions_Sort,
+  page: Int,
+  limit: Int,
+}
+
+input GetDemoListInput {
+  name: String,
+}
+
+## Muatation
+input CreateDemoInput {
+  testName: String,
+}

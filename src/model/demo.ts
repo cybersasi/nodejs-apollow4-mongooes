@@ -1,24 +1,14 @@
-import mongoose, { Schema, Model, Types } from "mongoose";
-import { encryptPassword } from "../util/authentication";
-
-export interface IDemo {
-  _id: Types.ObjectId,
-  name: string,
-  email: string,
-  password: string,
-  created_at: string,
-  updated_at: string,
-}
+import { Schema, Model } from "mongoose";
+import mongoosePaginateV2 from 'mongoose-paginate-v2';
+import mongooseAggregatePaginateV2 from 'mongoose-aggregate-paginate-v2';
+import { IDemo } from "../typings";
 
 const DemoSchema = new Schema<IDemo, Model<IDemo>>({
-  _id: { type: Schema.Types.ObjectId, required: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  password: { Type: String, required: true, set: (val: string) => encryptPassword(val) },
-  created_at: { Type: String, required: true, default: new Date().toISOString() },
-  updated_at: { Type: String, required: true, default: new Date().toISOString() },
+  _id: { type: Schema.Types.ObjectId, default: 'DEFAULT_VALUE' },
+  testName: { type: String, default: 'DEFAULT_VALUE' },
 });
 
-const Demo = mongoose.model("Demo", DemoSchema, 'demo');
+DemoSchema.plugin(mongoosePaginateV2);
+DemoSchema.plugin(mongooseAggregatePaginateV2);
 
-export default Demo
+export { DemoSchema };

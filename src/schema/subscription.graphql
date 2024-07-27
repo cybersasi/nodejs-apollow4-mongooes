@@ -1,7 +1,0 @@
-  type Subscription {
-    # testSub: User
-    # order(store_id: ID):Order
-
-    # watchStore(_id: ID):Store
-    users: [User!]
-  }

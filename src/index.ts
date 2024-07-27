@@ -1,31 +1,35 @@
-// npm install @apollo/server express graphql cors body-parser
-
 import { expressMiddleware } from '@apollo/server/express4';
 import { server } from './lib/apollo';
-import { init } from "./lib/database";
-import express from 'express';
+import { init } from './lib/database';
+import express, { Request, Response } from 'express';
 import http from 'http';
 import cors from 'cors';
-import bodyParser from 'body-parser';
+import { decryptBearerToken } from './util/authentication';
+import { api } from './api';
 
-init()
-.then(async () => {
+init().then((async () => {
   const app = express();
   const httpServer = http.createServer(app);
-  const Apollo = server(httpServer)
-  await Apollo.start();
+  const apolloServer = server(httpServer)
 
+  await apolloServer.start();
+  
   app.use(
     '/graphql',
     cors<cors.CorsRequest>(),
-    bodyParser.json(),
-    expressMiddleware(Apollo, {
-      context: async ({ req }) => ({ token: req.headers.token }),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      context: async ({ req, res }: { req: Request, res: Response }) => ({
+        authScope: decryptBearerToken(req.headers.token as string)
+      }),
     }),
   );
+  
+  await new Promise<void>((resolve) => {
+    const { SERVER_PORT } = process.env;
 
-  // Modified server startup
-  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000/graphql`)
-});
-
+    api(app);
+    httpServer.listen({ port: Number(SERVER_PORT) }, resolve);
+    console.log(`Server ready at http://localhost:${SERVER_PORT}/graphql`);
+  });
+}));
