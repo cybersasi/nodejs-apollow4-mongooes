@@ -8,7 +8,6 @@ let db: any;
 const init = async () => {
   // Connection Operational Database
   db = await mongoose.createConnection(`${config.databaseUrl}/${config.databaseName}`).asPromise();
-  db.model('demo', DemoSchema);
 
   // Connection Logging Database
   // loggingDB = await mongoose.createConnection(`${config.databaseUrl}/${config.loggingDatabaseName}`).asPromise();
